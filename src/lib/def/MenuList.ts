@@ -22,12 +22,6 @@ export type MenuElements = MenuElement[];
 /** 所有的菜单元素 */
 export const AllMenuElements: MenuElements = [
   {
-    text: '错误',
-    href: '/err',
-    visible: false,
-    lvl: 0,
-  },
-  {
     text: '概况',
     icon: 'gaikuang',
     href: '/',

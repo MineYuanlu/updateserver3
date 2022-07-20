@@ -12,11 +12,14 @@ import { HttpReqCount } from '$lib/Counter';
 import { getUserInfoById } from '$lib/db/Prisma';
 import { getLoginTokenInfo } from '$lib/db/User';
 import { NAME } from '$lib/def/Config';
+import { prerendering } from '$app/env';
 
 export const handle: Handle = async ({ event, resolve }) => {
   //启动初始化等待
-  initStart();
-  await finishWaiter;
+  if (!prerendering) {
+    initStart();
+    await finishWaiter;
+  }
 
   //计数器
   HttpReqCount && HttpReqCount.add(1);
