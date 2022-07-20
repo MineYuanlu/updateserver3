@@ -16,16 +16,26 @@
   import Container from '$lib/Container.svelte';
   import Panel from '$lib/Panel.svelte';
   import SvgIcon from '$lib/SvgIcon.svelte';
-  import type { UserInfoPublic } from '$lib/def/User';
+  import type { UserInfo, UserInfoPublic } from '$lib/def/User';
   import type { VersionInfo } from '$lib/def/Version';
   import { keys } from '$lib/def/Tool';
   import { featureNames, Finfo, transData } from './_finfo';
   import { browser } from '$app/env';
   import { blur } from 'svelte/transition';
+  import { session } from '$app/stores';
+  import { PageLevel } from '$lib/def/MenuList';
   export let project: Project<UserInfoPublic, VersionInfo>;
 
+  /**是否拥有项目的权限*/
+  const hasPermission =
+    ($session.user as UserInfo)?.id == project.owner?.id ||
+    ($session.user as UserInfo)?.lvl >= PageLevel.admin;
+
+  /**编辑状态*/
   const editField: { [k in keyof typeof project]?: boolean } = {};
+  /**编辑数据*/
   const editData: { [k in keyof typeof project]?: typeof project[k] } = {};
+  /**切换编辑状态*/
   const edit = (f: keyof typeof project) => {
     if ((editField[f] = !editField[f])) editData[f] = project[f] as any;
   };
@@ -43,41 +53,44 @@
     <table id="info" class="table table-hover">
       <tbody>
         {#each keys(project) as field}
-          {@const canEdit = Finfo(field, 'canEdit', false)}
-          <tr>
-            <td width="20%" style="text-align:right">
-              {Finfo(field, 'name', field)}
-            </td>
-            {#if canEdit && editField[field]}
-              <td>
-                {#if canEdit === 'bool'}
-                  <select>
-                    <option selected={!!project[field]}>{transData(field, true)}</option>
-                    <option selected={!project[field]}>{transData(field, false)}</option>
-                  </select>
-                {:else if canEdit === 'pass'}
-                  <input type="password" />
-                {:else if canEdit === 'version'}
-                  <a href="/">选择版本</a>
-                {:else if canEdit === true}
-                  <input type="text" />
-                {/if}
+          {@const canEdit = hasPermission && Finfo(field, 'canEdit', false)}
+          {@const vi = hasPermission || !Finfo(field, 'hideOther', false)}
+          {#if vi}
+            <tr>
+              <td width="20%" style="text-align:right">
+                {Finfo(field, 'name', field)}
               </td>
-            {:else}
-              <td class="font-bold">
-                {@html transData(field, project[field])}
-              </td>
-            {/if}
-            <td width="10%" on:click={canEdit ? () => edit(field) : undefined}>
-              {#if canEdit}
-                {#if editField[field]}
-                  123
-                {:else}
-                  <SvgIcon icon="edit" style="font-size:2em;" />
-                {/if}
+              {#if canEdit && editField[field]}
+                <td>
+                  {#if canEdit === 'bool'}
+                    <select>
+                      <option selected={!!project[field]}>{transData(field, true)}</option>
+                      <option selected={!project[field]}>{transData(field, false)}</option>
+                    </select>
+                  {:else if canEdit === 'pass'}
+                    <input type="password" />
+                  {:else if canEdit === 'version'}
+                    <a href="/">选择版本</a>
+                  {:else if canEdit === true}
+                    <input type="text" />
+                  {/if}
+                </td>
+              {:else}
+                <td class="font-bold">
+                  {@html transData(field, project[field])}
+                </td>
               {/if}
-            </td>
-          </tr>
+              <td width="10%" on:click={canEdit ? () => edit(field) : undefined}>
+                {#if canEdit}
+                  {#if editField[field]}
+                    123
+                  {:else}
+                    <SvgIcon icon="edit" style="font-size:2em;" />
+                  {/if}
+                {/if}
+              </td>
+            </tr>
+          {/if}
         {/each}
       </tbody>
     </table>

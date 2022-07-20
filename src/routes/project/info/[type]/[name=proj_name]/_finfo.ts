@@ -6,8 +6,12 @@ type proj = Project<UserInfoPublic, VersionInfo>;
 /**字段数据, 包括名称、是否可编辑、是否正在编辑、数据翻译*/
 export const finfo: {
   [key in keyof proj]: {
+    /**显示名称 */
     name: string;
+    /** 是否可以编辑 (或编辑类型) */
     canEdit: boolean | 'bool' | 'pass' | 'version';
+    /** 对于其他用户是否隐藏(其他普通用户, 不包括owner和admin) */
+    hideOther?: boolean;
     trans?: (data: proj[key]) => any;
   };
 } = {
@@ -42,7 +46,7 @@ export const finfo: {
   },
   v_ext: { name: '额外版本串', canEdit: true },
   v_filename: { name: '文件名格式', canEdit: true },
-  token: { name: '更新令牌', canEdit: true },
+  token: { name: '更新令牌', canEdit: true, hideOther: true },
 };
 type keys = Expand<keyof typeof finfo>;
 /**

@@ -33,7 +33,7 @@ export const AllMenuElements: MenuElements = [
     icon: 'liebiao',
     href: '/project',
     visible: true,
-    lvl: 1,
+    lvl: 0,
   },
   {
     text: '个人中心',

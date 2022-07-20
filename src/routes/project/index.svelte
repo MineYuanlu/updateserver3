@@ -20,6 +20,10 @@
   import { browser } from '$app/env';
   import { getProjectList as getProjectList0 } from '$lib/api/project';
   import type { VersionInfo } from '$lib/def/Version';
+  import { session } from '$app/stores';
+  import type { UserInfo } from '$lib/def/User';
+
+  const login = !!($session.user as UserInfo)?.id;
   type showType = 'me' | 'all';
   type ProjectInfo = ProjectInfoList['list'][number];
   /**基础信息的列表*/
@@ -41,7 +45,7 @@
   const projectListStat: {
     [key: string]: { end: boolean; index: number | undefined; lock?: boolean };
   } = {
-    me: { end: false, index: undefined, lock: undefined },
+    me: { end: !login, index: undefined, lock: undefined },
     all: { end: false, index: undefined, lock: undefined },
   };
 
@@ -113,49 +117,53 @@
   </Container>
   <Container id="project-list">
     <Panel title={showAll ? '全部项目列表' : '个人项目列表'}>
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>名称</th>
-            <th>类型</th>
-            {#if showAll}
-              <th>作者</th>
-            {/if}
-            <th>最新稳定版</th>
-            <th>最新预览版</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#if err[type]}
-            <tr style="text-align:center;">
-              <td colspan="5">{err[type]}</td>
+      {#if showAll || login}
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th>类型</th>
+              {#if showAll}
+                <th>作者</th>
+              {/if}
+              <th>最新稳定版</th>
+              <th>最新预览版</th>
             </tr>
-          {:else if projects[type].length}
-            {#each projects[type] as p (p.id)}
-              <tr in:fade on:click={() => goProject(p)}>
-                <td>{p.name}</td>
-                <td>{p.type}</td>
-                {#if showAll}
-                  <td>{p.owner}</td>
-                {/if}
-                <td>{getVersion(p, p.v_nor)}</td>
-                <td>{getVersion(p, p.v_pre)}</td>
+          </thead>
+          <tbody>
+            {#if err[type]}
+              <tr style="text-align:center;">
+                <td colspan="5">{err[type]}</td>
               </tr>
-            {/each}
-            {#if !projectListStat[type].end}
-              <td colspan="5" style="text-align:center">
-                <button class="btn btn-lg btn-block" style="width:100%">点击加载</button>
-              </td>
+            {:else if projects[type].length}
+              {#each projects[type] as p (p.id)}
+                <tr in:fade on:click={() => goProject(p)}>
+                  <td>{p.name}</td>
+                  <td>{p.type}</td>
+                  {#if showAll}
+                    <td>{p.owner}</td>
+                  {/if}
+                  <td>{getVersion(p, p.v_nor)}</td>
+                  <td>{getVersion(p, p.v_pre)}</td>
+                </tr>
+              {/each}
+              {#if !projectListStat[type].end}
+                <td colspan="5" style="text-align:center">
+                  <button class="btn btn-lg btn-block" style="width:100%">点击加载</button>
+                </td>
+              {/if}
+            {:else}
+              <tr class="info" style="text-align:center;">
+                <td colspan="5" style="text-align:center">
+                  {#if projectListStat[type].end}暂无项目{:else}加载中...{/if}
+                </td>
+              </tr>
             {/if}
-          {:else}
-            <tr class="info" style="text-align:center;">
-              <td colspan="5" style="text-align:center">
-                {#if projectListStat[type].end}暂无项目{:else}加载中...{/if}
-              </td>
-            </tr>
-          {/if}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      {:else}
+        请先<a href="/usr">登录</a>!
+      {/if}
     </Panel>
   </Container>
 {/if}
