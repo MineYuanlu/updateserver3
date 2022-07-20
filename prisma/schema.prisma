@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model assets {
+  version_id Int      @db.UnsignedInt
+  name       String   @db.VarChar(255)
+  url        String   @db.VarChar(255)
+  versions   versions @relation(fields: [version_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "assets_ibfk_1")
+
+  @@id([version_id, name])
+  @@index([version_id, name], map: "version_id")
+  @@index([version_id], map: "version_id_2")
+}
+
+model counter {
+  key   String   @id @db.VarChar(255)
+  value BigInt   @default(0) @db.UnsignedBigInt
+  daily BigInt   @default(0) @db.UnsignedBigInt
+  date  DateTime @default(now()) @db.DateTime(0)
+}
+
+model login_types {
+  name             String  @id @db.VarChar(255)
+  authorizationURL String  @db.VarChar(255)
+  tokenURL         String  @db.VarChar(255)
+  resourceURL      String  @db.VarChar(255)
+  clientID         String  @db.VarChar(255)
+  clientSecret     String  @db.VarChar(255)
+  callbackURL      String? @db.VarChar(255)
+  emailField       String? @db.VarChar(255)
+}
+
+model project {
+  id                               Int            @id @default(autoincrement()) @db.UnsignedInt
+  name                             String         @db.VarChar(255)
+  type                             String         @db.VarChar(255)
+  owner                            Int            @db.UnsignedInt
+  token                            String?        @db.VarChar(255)
+  v_useId                          Boolean        @default(false)
+  v_nor                            Int?           @db.UnsignedInt
+  v_pre                            Int?           @db.UnsignedInt
+  v_extra                          String?        @db.VarChar(2047)
+  v_filename                       String?        @db.VarChar(255)
+  user                             user           @relation(fields: [owner], references: [id], onUpdate: Restrict, map: "project_ibfk_2")
+  types                            types          @relation(fields: [type], references: [name], onUpdate: Restrict, map: "project_ibfk_1")
+  versions_project_v_norToversions versions?      @relation("project_v_norToversions", fields: [v_nor], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "project_ibfk_3")
+  versions_project_v_preToversions versions?      @relation("project_v_preToversions", fields: [v_pre], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "project_ibfk_4")
+  status_chart                     status_chart[]
+  versions_projectToversions_owner versions[]     @relation("projectToversions_owner")
+
+  @@unique([type, name], map: "type")
+  @@index([name], map: "name")
+  @@index([owner], map: "owner")
+  @@index([v_nor], map: "v_nor")
+  @@index([v_pre], map: "v_pre")
+}
+
+model status_chart {
+  owner   Int     @db.UnsignedInt
+  id      String  @db.VarChar(255)
+  type    String  @db.VarChar(255)
+  struct  String  @db.Text
+  project project @relation(fields: [owner], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "status_chart_ibfk_1")
+
+  @@id([owner, id])
+}
+
+model status_data {
+  owner Int    @db.UnsignedInt
+  id    String @db.VarChar(255)
+  type  Int
+  data  Bytes  @db.Blob
+
+  @@id([owner, id])
+}
+
+model types {
+  name    String    @id @db.VarChar(255)
+  notes   String    @default("") @db.VarChar(255)
+  project project[]
+
+  @@index([name], map: "name")
+}
+
+model user {
+  id      Int       @id @default(autoincrement()) @db.UnsignedInt
+  local   Int?      @unique(map: "local") @db.UnsignedInt
+  name    String?   @db.VarChar(255)
+  email   String    @db.VarChar(255)
+  nick    String?   @db.VarChar(255)
+  lvl     Int       @default(1) @db.TinyInt
+  project project[]
+}
+
+model user_third_type {
+  key   String  @id @db.VarChar(255)
+  using Boolean @default(false)
+  type  String  @db.VarChar(255)
+
+  @@index([using], map: "using")
+}
+
+model versions {
+  id                              Int       @id @default(autoincrement()) @db.UnsignedInt
+  owner                           Int       @db.UnsignedInt
+  version_id                      Int?
+  version                         String?   @db.VarChar(255)
+  prerelease                      Boolean   @default(false)
+  downloadCount                   BigInt    @default(0) @db.UnsignedBigInt
+  project_projectToversions_owner project   @relation("projectToversions_owner", fields: [owner], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "owner")
+  assets                          assets[]
+  project_project_v_norToversions project[] @relation("project_v_norToversions")
+  project_project_v_preToversions project[] @relation("project_v_preToversions")
+
+  @@index([id, owner], map: "io")
+  @@index([owner], map: "owner")
+}
