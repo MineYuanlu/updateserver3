@@ -19,7 +19,7 @@
   import { session } from '$app/stores';
   import InfoCard from '$lib/InfoCard.svelte';
   import { getLoginTypeInfo } from '$lib/api/usr/login';
-  import TypeEdit from './_typeEdit.svelte';
+  import TypeEdit from './_TypeEdit.svelte';
 
   export let loginTypes: string[];
 
