@@ -51,7 +51,7 @@
     "heap": "^0.2.7",
     "jsonwebtoken": "^8.5.1",
     "node-cache": "^5.1.2",
-    "node-fetch": "^3.2.3",
+    "node-fetch": "^3.2.10",
     "sass": "^1.53.0",
     "sqlstring": "^2.3.3"
   }
