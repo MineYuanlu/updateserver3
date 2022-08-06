@@ -1,12 +1,10 @@
 <script context="module" lang="ts">
   import type { Load } from '@sveltejs/kit';
+  import { PageLevel } from '$lib/def/MenuList';
+  import { listLoginTypes } from '$lib/api/usr/login';
   export const load: Load = async ({ fetch }) => {
-    let resp = await (await fetch('/usr/login/types')).json();
-    return {
-      props: {
-        loginTypes: resp,
-      },
-    };
+    const loginTypes = await listLoginTypes(fetch);
+    return { props: { loginTypes } };
   };
 </script>
 
@@ -36,20 +34,19 @@
 
 <Container>
   {#if user}
-    <Panel title="用户信息" PanelColor="orange" col="6">
-      <table class="table table-striped table-hover table-condensed">
+    <Panel title="用户信息" PanelColor="orange" col="12">
+      <table class="table table-striped table-hover table-condensed" style:font-size="1.1rem">
         <tbody>
           {#each keys(user) as field}
             <tr>
-              <td class="col-lg-2 col-md-3 col-sm-4 col-xs-4" style="text-align:right;">{field}</td>
-              <td class="col-lg-2 col-md-3 col-sm-4 col-xs-4">
-                {#if fieldNames[field]}{fieldNames[field]}{/if}
+              <td class="col-lg-2 col-md-3 col-sm-4 col-xs-4" style="text-align:right;">
+                <small>{field}</small>&nbsp;{#if fieldNames[field]}{fieldNames[field]}{/if}
               </td>
-              <td>
+              <td style:border-left="1px solid #ccc">
                 {#if user[field]}
                   {user[field]}
                 {:else}
-                  <span style="color:lightgray">-</span>
+                  <span style:color="lightgray">-</span>
                 {/if}
               </td>
             </tr>
@@ -58,6 +55,11 @@
       </table>
       <a class="btn btn-primary" href="/usr/logout">退出登录</a>
     </Panel>
+    {#if user.lvl >= PageLevel.admin}
+      <Panel title="管理员面板" PanelColor="blue" col="6">
+        <a href="/usr/login/admin/types" class="btn btn-primary">管理登录类型</a>
+      </Panel>
+    {/if}
   {:else}
     <Panel title="您还未登陆" PanelColor="green">
       {#each loginTypes as type}

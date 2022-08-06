@@ -8,7 +8,7 @@ import { getLoginType } from '../../types';
  */
 export const GET: RequestHandler = async (event) => {
   /** OAuth类型 */
-  const type = event.params['type'];
+  const { type } = event.params;
   const data = await getLoginType(type);
   if (data === null) {
     return {

@@ -1,5 +1,5 @@
 import type { SubBox } from '$lib/db/Prisma';
-import type { user } from '.prisma/client';
+import type { user, login_types } from '.prisma/client';
 import type { JwtPayload } from 'jsonwebtoken';
 /**
  * 用户基础数据
@@ -37,3 +37,17 @@ export type LoginTokenInfo = JwtPayload & {
   /** 登录平台 */
   t: string;
 };
+
+/**
+ * 登录类型的信息字段
+ */
+export const loginTypeInfoField = [
+  'name',
+  'authorizationURL',
+  'tokenURL',
+  'resourceURL',
+  'clientID',
+  'callbackURL',
+  'emailField',
+] as const;
+export type LoginTypeInfo = SubBox<login_types, typeof loginTypeInfoField[number]>;

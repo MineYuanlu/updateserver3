@@ -17,16 +17,14 @@ export const GET: RequestHandler = async (event) => {
   const amount = Math.min(Math.max(parseInt(params.get('amount') as string) || 20, 1), 100);
   switch (type) {
     case 'me': {
-      const token = getUserTokenByRequest(event);
-      const userId = (token ? await getLoginTokenInfo(token) : {})?.u;
+      const userId = (await getLoginTokenInfo(getUserTokenByRequest(event)))?.u;
       if (userId) {
         const projects = await getProjectList(index, amount, userId);
         return { status: 200, body: projects as any };
       } else return { status: 401, body: 'Please log in to a user first' };
     }
     case 'overview': {
-      const token = getUserTokenByRequest(event);
-      const userId = (token ? await getLoginTokenInfo(token) : {})?.u;
+      const userId = (await getLoginTokenInfo(getUserTokenByRequest(event)))?.u;
       if (userId) {
         const projects = await getProjectOverviewList(userId);
         return { status: 200, body: projects as any };

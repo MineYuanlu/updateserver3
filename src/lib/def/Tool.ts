@@ -67,6 +67,20 @@ export function trans<K extends string | number | symbol, V1, V2>(
 export const keys = <K extends string>(data: Record<K, any>) => Object.keys(data) as K[];
 
 /**
+ * 将数组转换为obj
+ * @param data 数据
+ * @param val 值
+ * @returns obj
+ */
+export const toObj = <K extends string | number | symbol, V>(
+  data: readonly K[],
+  val: V,
+): { [k in K]: V } => {
+  const obj: any = {};
+  data.forEach((k) => (obj[k] = val));
+  return obj;
+};
+/**
  * 简易的url构造器
  * @param arg 路径
  * @returns url

@@ -17,8 +17,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 /**@returns 全部信息*/
 export const GET: RequestHandler = async (event) => {
-  const token = getUserTokenByRequest(event);
-  const user = token && (await getLoginTokenInfo(token));
+  const user = await getLoginTokenInfo(getUserTokenByRequest(event));
   const body: Record<keyof InfoAll, string | bigint | number> = {
     ProjectsCount: await ProjectsCount(),
     VersionsCount: await VersionsCount(),

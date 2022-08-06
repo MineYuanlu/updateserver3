@@ -13,6 +13,8 @@ import {
 import {
   infoField,
   infoPublicField,
+  loginTypeInfoField,
+  type LoginTypeInfo,
   type User,
   type UserInfo,
   type UserInfoPublic,
@@ -45,6 +47,15 @@ export async function getLoginTypes(): Promise<string[]> {
   const datas = await prisma.login_types.findMany({ select: { name: true } });
   return datas.map((type) => type.name);
 }
+/**
+ * 获取登录类型的信息(OAuth2)
+ * @param {string} name 登录类型的名称
+ * @returns 登录数据
+ */
+export function getLoginTypeInfo(name: string): Promise<LoginTypeInfo | null> {
+  return prisma.login_types.findFirst({ where: { name }, select: loginTypeInfoField0 });
+}
+const loginTypeInfoField0 = transSelect(loginTypeInfoField);
 
 /**
  * 通过给定的数据创建一个用户
@@ -398,6 +409,44 @@ export async function getVersionById(
 }
 
 /**
+ * 保存版本
+ * @param owner 所属项目id
+ * @param version_id 版本id(由托管平台提供)
+ * @param version 版本号
+ * @param prerelease 是否是预览版
+ * @returns 保存的数据
+ */
+export async function saveVersion(
+  owner: number | string,
+  version_id: number | string,
+  version: string,
+  prerelease: boolean,
+) {
+  owner = parseInt(owner as any);
+  version_id = parseInt(version_id as any);
+  prerelease = !!prerelease;
+  return await prisma.versions.create({
+    data: { owner, version_id, version, prerelease },
+  });
+}
+
+/**
+ * 使用版本
+ *
+ * 使项目使用某一个版本作为当前版本
+ * @param version 版本数据
+ */
+export async function useVersion(version: SubBox<model.versions, 'id' | 'owner' | 'prerelease'>) {
+  const data: SubBox<model.Prisma.projectUncheckedUpdateInput, 'v_nor' | 'v_pre'> = {};
+  data[version.prerelease ? 'v_pre' : 'v_nor'] = version.id;
+  return await prisma.project.update({
+    where: { id: version.owner },
+    data,
+    select: { v_nor: !version.prerelease, v_pre: version.prerelease },
+  });
+}
+
+/**
  *通过版本ID获取一个版本的所有资源
  * @param vid 版本ID
  * @returns 版本/null
@@ -417,11 +466,26 @@ export async function getAssetsById(vid: number): Promise<Assets | null> {
 }
 
 /**
+ * 保存资源地址
+ * @param version_id 版本ID
+ * @param assets 资源数据
+ */
+export async function saveAssets(version_id: number, assets: Assets) {
+  version_id = parseInt(version_id as any);
+  if (!(version_id > 0)) return null;
+
+  const data: model.Prisma.assetsCreateManyInput[] = [];
+  for (const name in assets) data.push({ version_id, name, url: assets[name] });
+
+  return await prisma.assets.createMany({ data });
+}
+
+/**
  * 获取某个表的字段数量
  * @param table 表名
  * @return amount数量
  * */
-export async function getTableCount(table: string): Promise<bigint | number> {
+export async function getTableCount(table: model.Prisma.ModelName): Promise<bigint | number> {
   if (!table || table.indexOf('`') >= 0) return 0;
   const data = await prisma.$queryRawUnsafe<{ count: bigint | number }[]>(
     `SELECT count(1)AS count FROM ${sqlstring.escapeId(table)}`,

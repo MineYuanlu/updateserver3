@@ -6,9 +6,12 @@ import cookie from 'cookie';
  * @param event 请求事件
  * @returns 请求事件中包含的用户token
  */
-export const getUserTokenByRequest = (event: RequestEvent<Record<string, string>>): string => {
-  const cookies = cookie.parse(event.request.headers.get('cookie') || '');
-  return cookies[login_key];
+export const getUserTokenByRequest = (
+  event: RequestEvent<Record<string, string>>,
+): string | null => {
+  const raw = event.request.headers.get('cookie');
+  if (!raw) return null;
+  return (cookie.parse(raw) || {})[login_key];
 };
 
 /** cookie中state键 */

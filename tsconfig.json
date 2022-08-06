@@ -15,11 +15,12 @@
     "target": "es2020",
     "paths": {
       "$components/*": ["src/lib/components/*"],
-      "$database/*": ["src/lib/database/*"],
-      "$defs/*": ["src/lib/defs/*"],
+      "$db/*": ["src/lib/db/*"],
+      "$def/*": ["src/lib/def/*"],
       "$helpers/*": ["src/lib/helpers/*"],
       "$lib": ["src/lib"],
-      "$lib/*": ["src/lib/*"]
+      "$lib/*": ["src/lib/*"],
+      "$api": ["src/lib/api/*"]
     }
   }
 }

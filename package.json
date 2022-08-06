@@ -18,6 +18,7 @@
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.81",
     "@sveltejs/kit": "1.0.0-next.377",
+    "@types/bootstrap": "^5.1.13",
     "@types/cookie": "^0.5.1",
     "@types/heap": "^0.2.31",
     "@types/jsonwebtoken": "^8.5.8",

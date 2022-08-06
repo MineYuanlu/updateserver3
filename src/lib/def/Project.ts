@@ -1,5 +1,5 @@
 import type { UserInfoPublic } from './User';
-import type { Version, VersionInfo } from './Version';
+import type { Version, VersionExtra, VersionInfo } from './Version';
 
 /**
  * 项目名字/项目类型限定, 大小写字母开头, 可以包含大小写字母，数字，下划线和减号, 长度1~16
@@ -52,13 +52,6 @@ export type Project<
     token: string | null;
   }
 >;
-/**
- * 版本额外数据
- */
-export type VersionExtra = {
-  arr: string[];
-  offset: number;
-};
 
 /**
  * 项目列表信息

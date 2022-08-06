@@ -34,7 +34,7 @@
   /**信息数据*/
   export let data: any;
   /**显示类型*/
-  let type: showType = 'me';
+  let type: showType = login ? 'me' : 'all';
   /**是否正在显示全部列表*/
   $: showAll = type === 'all';
   /**发生的错误*/

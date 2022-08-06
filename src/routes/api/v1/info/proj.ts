@@ -6,8 +6,7 @@ import { b2n, trans } from '$lib/def/Tool';
 import type { RequestHandler } from '@sveltejs/kit';
 /**@returns 项目信息 */
 export const GET: RequestHandler = async (event) => {
-  const token = getUserTokenByRequest(event);
-  const user = token && (await getLoginTokenInfo(token));
+  const user = await getLoginTokenInfo(getUserTokenByRequest(event));
   const body: Record<keyof InfoProj, string | bigint | number> = {
     ProjectsCount: await ProjectsCount(),
     UserProjectCount: user ? await UserProjectCount(user.u) : '--',

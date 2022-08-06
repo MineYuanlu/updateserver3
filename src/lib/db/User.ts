@@ -2,6 +2,7 @@ import type { LoginTokenInfo, User, UserData } from '$lib/def/User';
 import { createUser, getUserByEmail } from './Prisma';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
+import type { MaybePromise } from '@sveltejs/kit/types/private';
 
 /**
  * 将外部数据翻译为有效数据
@@ -92,7 +93,8 @@ export const summonToken = (info: LoginTokenInfo): string => {
  * @return {User} 用户ID
  * @return null: 验证失败
  */
-export const getLoginTokenInfo = (token: string): Promise<LoginTokenInfo | null> => {
+export const getLoginTokenInfo = (token: string | null): MaybePromise<LoginTokenInfo | null> => {
+  if (!token) return null;
   return new Promise((resolve) => {
     jwt.verify(token, private_token, (err, res) => {
       if (err) resolve(null);
