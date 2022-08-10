@@ -11,6 +11,15 @@ import type { Version, VersionExtra, VersionInfo } from './Version';
  *
  */
 export const nameLimit = /^[a-zA-Z][a-zA-Z0-9_-]{0,15}$/;
+/**
+ * 检测项目的名称是否合法
+ * @param type 类型
+ * @param name 名称
+ * @return 是否合法
+ */
+export function checkProjectTypeName(type: string, name: string): boolean {
+  return !!(type && name && nameLimit.test(type) && nameLimit.test(name));
+}
 
 /**
  * 代表一个项目的基础信息
@@ -28,8 +37,6 @@ export type ProjectInfo<
   /** 项目所有者(名称) */
   owner: U | null;
 
-  /** 是否优先使用ID比较 */
-  cmpWithId: boolean;
   /** 最新稳定版本 */
   v_nor: V | null;
   /** 最新预览版本 */

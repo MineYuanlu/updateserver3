@@ -83,11 +83,9 @@
     if (!stat.end && !stat.index) getProjectList();
   };
   /**获取版本字符串*/
-  const getVersion = (p: ProjectInfo, ver: null | number | VersionInfo): string => {
+  const getVersion = (ver: null | number | VersionInfo): string => {
     if (typeof ver === 'number') return ver.toString();
-    if (!ver) return '-';
-    if (p.cmpWithId) return (ver.version_id || ver.version || '-').toString();
-    else return (ver.version || ver.version_id || '-').toString();
+    return (ver?.version || '-').toString();
   };
 
   if (browser) getProjectList();
@@ -143,8 +141,8 @@
                   {#if showAll}
                     <td>{p.owner}</td>
                   {/if}
-                  <td>{getVersion(p, p.v_nor)}</td>
-                  <td>{getVersion(p, p.v_pre)}</td>
+                  <td>{getVersion(p.v_nor)}</td>
+                  <td>{getVersion(p.v_pre)}</td>
                 </tr>
               {/each}
               {#if !projectListStat[type].end}

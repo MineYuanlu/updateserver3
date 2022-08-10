@@ -19,6 +19,10 @@ export const createEnum = <T extends readonly string[]>(...name: T): Enum<T> => 
 };
 export const expand = <T>(t: T): Expand<T> => t as any;
 
+export type KeyOfType<O, T> = {
+  [K in keyof O]: O[K] extends T ? K : never;
+}[keyof O];
+
 /**Number最大值 */
 const V_MAX = BigInt(Number.MAX_SAFE_INTEGER);
 /**Number最小值 */
@@ -46,7 +50,7 @@ export function b2n(v: bigint | number | string) {
  * @param v 输入数据
  * @returns 输出数据
  */
-export function n2b(v: bigint | number): bigint {
+export function n2b(v: bigint | number | string): bigint {
   return typeof v === 'bigint' ? v : BigInt(v);
 }
 /**

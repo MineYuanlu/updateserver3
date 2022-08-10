@@ -71,9 +71,6 @@
   可选参数, 指定后将过滤小于等于当前版本的更新信息;
   <ul>
     <li>
-      id - 当前版本的版本id{#if anyVersion}(例: {anyVersion.version_id}){/if}
-    </li>
-    <li>
       tag - 当前版本的版本标签{#if anyVersion}(例: {anyVersion.version}){/if}
     </li>
   </ul>
@@ -88,57 +85,116 @@
 <hr />
 
 <h3>徽章</h3>
-<blockquote>
-  {$page.url.origin}/ico/<Select
-    options={['v', 'version', 'd', 'download']}
-    bind:value={icoType0}
-  /><Select
-    options={['', '-n', '-nor', '-normal', '-p', '-pre', '-prerelease']}
-    bind:value={icoType1}
-  />/{project.type}/{project.name}?{#each keys(icoParamDefault) as k, i}
-    {#if i}&{/if}{k}={#if k.startsWith('c_')}<Select
-        style="background-color:{colors[icoParam0[k] || icoParamDefault[k]]}"
-        options={colorsKey}
-        bind:value={icoParam0[k]}
-      />{:else}<input bind:value={icoParam0[k]} />{/if}
-  {/each}
-  <br />
-  徽章链接: <a href={icoUrl} target="_blank">{icoUrl}</a>&nbsp;
-  <div class="btn-group btn-group-sm">
-    <button type="button" class="btn btn-outline-primary" on:click={(e) => copyHandle(e, icoUrl)}>
-      复制链接
-    </button>
-    <button
-      type="button"
-      class="btn btn-outline-primary"
-      on:click={(e) =>
-        copyHandle(
-          e,
-          `[![${project.type}/${project.name}](${icoUrl})](${$page.url.origin}${$page.url.pathname})`,
-        )}
-    >
-      复制markdown
-    </button>
-    <button
-      type="button"
-      class="btn btn-outline-primary"
-      on:click={(e) =>
-        copyHandle(
-          e,
-          `<a href="${$page.url.origin}${$page.url.pathname}" target="_blank"><img href="${icoUrl}" alt="${project.type}/${project.name}"></a>`,
-        )}
-    >
-      复制html
-    </button>
-    <button
-      type="button"
-      class="btn btn-outline-primary"
-      on:click={(e) =>
-        copyHandle(e, `[url=${$page.url.origin}${$page.url.pathname}][img]${icoUrl}[/img][/url]`)}
-    >
-      复制bbcode
-    </button>
-  </div>
-  <br />
-  徽章预览: <img src={icoUrl} alt="{project.type}/{project.name}" /><br />
-</blockquote>
+<table class="table-badge table table-hover table-bordered">
+  <thead>
+    <tr>
+      <th>参数</th>
+      <th>值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>type</td>
+      <td>
+        <Select options={['v', 'version', 'd', 'download']} bind:value={icoType0} />
+      </td>
+    </tr>
+    <tr>
+      <td>version</td>
+      <td>
+        <Select
+          options={['', '-n', '-nor', '-normal', '-p', '-pre', '-prerelease']}
+          bind:value={icoType1}
+        />
+      </td>
+    </tr>
+    {#each keys(icoParamDefault) as k}
+      <tr>
+        <td>{k}</td>
+        <td>
+          {#if k.startsWith('c_')}
+            <Select
+              style="background-color:{colors[icoParam0[k] || icoParamDefault[k]]}"
+              options={colorsKey}
+              bind:value={icoParam0[k]}
+            />
+          {:else}
+            <input bind:value={icoParam0[k]} />
+          {/if}
+        </td>
+      </tr>
+    {/each}
+  </tbody>
+  <thead><tr><th colspan="2">徽章</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>链接</td>
+      <td><a href={icoUrl} target="_blank">{icoUrl}</a></td>
+    </tr>
+    <tr>
+      <td>复制</td>
+      <td>
+        <div class="btn-group btn-group-sm">
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            on:click={(e) => copyHandle(e, icoUrl)}
+          >
+            复制链接
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            on:click={(e) =>
+              copyHandle(
+                e,
+                `[![${project.type}/${project.name}](${icoUrl})](${$page.url.origin}${$page.url.pathname})`,
+              )}
+          >
+            复制markdown
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            on:click={(e) =>
+              copyHandle(
+                e,
+                `<a href="${$page.url.origin}${$page.url.pathname}" target="_blank"><img href="${icoUrl}" alt="${project.type}/${project.name}"></a>`,
+              )}
+          >
+            复制html
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            on:click={(e) =>
+              copyHandle(
+                e,
+                `[url=${$page.url.origin}${$page.url.pathname}][img]${icoUrl}[/img][/url]`,
+              )}
+          >
+            复制bbcode
+          </button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>预览</td>
+      <td><img src={icoUrl} alt="{project.type}/{project.name}" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<style lang="scss">
+  .table-badge {
+    tbody,
+    thead {
+      tr {
+        th:first-child,
+        td:first-child {
+          width: 20%;
+        }
+      }
+    }
+  }
+</style>

@@ -22,9 +22,10 @@
   import { featureNames, Finfo, transData } from './_finfo';
   import { browser } from '$app/env';
   import { blur } from 'svelte/transition';
-  import { session } from '$app/stores';
+  import { page, session } from '$app/stores';
   import { PageLevel } from '$lib/def/MenuList';
   export let project: Project<UserInfoPublic, VersionInfo>;
+  const user: UserInfo = $session.user;
 
   /**是否拥有项目的权限*/
   const hasPermission =
@@ -40,12 +41,19 @@
     if ((editField[f] = !editField[f])) editData[f] = project[f] as any;
   };
 
-  const name2path = (name: string) => `./_features/${name}.svelte`;
+  const name2path = (name: string | undefined) => (name ? `./_features/${name}.svelte` : undefined);
+  const fByHash = (hash: string) =>
+    hash && featureNames[hash.substring(1)] ? hash.substring(1) : undefined;
   const features =
     browser &&
     (import.meta.glob('./_features/*.svelte') as Record<string, () => Promise<{ default: any }>>);
-  let nowFeature = (featureNames && name2path(Object.keys(featureNames)[0])) || undefined;
+  let nowFeatureName =
+    fByHash($page.url.hash) || (featureNames && Object.keys(featureNames)[0]) || undefined;
+  $: nowFeature = name2path(nowFeatureName);
+  $: if (browser) location.hash = nowFeatureName || '';
 </script>
+
+<svelte:window on:hashchange={() => (nowFeatureName = fByHash(location.hash) || nowFeatureName)} />
 
 <Container id="basic">
   <Panel title="项目信息" PanelColor="cyan">
@@ -62,12 +70,13 @@
               </td>
               {#if canEdit && editField[field]}
                 <td>
-                  {#if canEdit === 'bool'}
+                  <!-- {#if canEdit === 'bool'}
                     <select>
                       <option selected={!!project[field]}>{transData(field, true)}</option>
                       <option selected={!project[field]}>{transData(field, false)}</option>
                     </select>
-                  {:else if canEdit === 'pass'}
+                  {:else  -->
+                  {#if canEdit === 'pass'}
                     <input type="password" />
                   {:else if canEdit === 'version'}
                     <a href="/">选择版本</a>
@@ -99,10 +108,11 @@
     <Panel PanelColor="red">
       <div class="sub-nav" style:--elements={Object.keys(featureNames).length}>
         {#each Object.keys(featureNames) as key}
-          {@const path = name2path(key)}
-          <span class:active={nowFeature === path} on:click={() => (nowFeature = path)}>
-            {featureNames[key]}
-          </span>
+          {#if !featureNames[key].ownerOnly || user.id === project.owner?.id || nowFeatureName === key}
+            <span class:active={nowFeatureName === key} on:click={() => (nowFeatureName = key)}>
+              {featureNames[key].title}
+            </span>
+          {/if}
         {/each}
       </div>
       {#if browser && features && nowFeature}

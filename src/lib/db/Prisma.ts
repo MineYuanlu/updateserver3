@@ -3,7 +3,7 @@ import { initFinish, startWaiter } from '$lib/def/initer';
 import { PageLevel } from '$lib/def/MenuList';
 import { exitHook } from '$lib/def/procexit';
 import {
-  nameLimit,
+  checkProjectTypeName,
   type Project,
   type ProjectInfo,
   type ProjectInfoList,
@@ -234,7 +234,6 @@ export async function getProjectList(
       type: val.type,
       name: val.name,
       owner: val.user.name,
-      cmpWithId: val.v_useId,
       v_nor: val.versions_project_v_norToversions,
       v_pre: val.versions_project_v_preToversions,
     }),
@@ -290,7 +289,6 @@ export async function getProjectByName(
     name: val.name,
     type: val.type,
     owner: val.user,
-    cmpWithId: val.v_useId,
     token: backAll ? val.token : null,
     v_ext: val.v_extra,
     v_filename: val.v_filename,
@@ -378,7 +376,7 @@ export async function getProjectInternalByName<Type extends keyof model.Prisma.p
  */
 export async function getVersionById(
   owner: number,
-  id: number,
+  id: number | string,
   withAssets: true,
 ): Promise<Version | null>;
 /**
@@ -390,13 +388,13 @@ export async function getVersionById(
  */
 export async function getVersionById(
   owner: number,
-  id: number,
+  id: number | string,
   withAssets?: false,
 ): Promise<model.versions | null>;
 
 export async function getVersionById(
   owner: number,
-  id: number,
+  id: number | string,
   withAssets: boolean = false,
 ): Promise<Version | model.versions | null> {
   owner = parseInt(owner as any);
@@ -411,22 +409,21 @@ export async function getVersionById(
 /**
  * 保存版本
  * @param owner 所属项目id
- * @param version_id 版本id(由托管平台提供)
  * @param version 版本号
  * @param prerelease 是否是预览版
+ * @param platform 所属平台
  * @returns 保存的数据
  */
 export async function saveVersion(
   owner: number | string,
-  version_id: number | string,
   version: string,
   prerelease: boolean,
+  platform: string,
 ) {
   owner = parseInt(owner as any);
-  version_id = parseInt(version_id as any);
   prerelease = !!prerelease;
   return await prisma.versions.create({
-    data: { owner, version_id, version, prerelease },
+    data: { owner, version, prerelease, platform, time: new Date() },
   });
 }
 
@@ -444,6 +441,39 @@ export async function useVersion(version: SubBox<model.versions, 'id' | 'owner' 
     data,
     select: { v_nor: !version.prerelease, v_pre: version.prerelease },
   });
+}
+
+/**
+ * 列出版本
+ * @param owner 所属的项目ID
+ * @returns 版本列表
+ */
+export async function listVersion(
+  owner: number | string,
+  per_page: number | string,
+  cursor: number | string | null,
+): Promise<VersionInfo[] | null> {
+  owner = parseInt(owner as any);
+  per_page = parseInt(per_page as any);
+  cursor = cursor === null ? null : parseInt(cursor as any);
+  if (!(owner > 0) || !(per_page > 0)) return null;
+  if (cursor !== null && !(cursor >= 0)) return null;
+  return await prisma.versions
+    .findMany({
+      where: { owner },
+      orderBy: { time: 'desc' },
+      cursor: cursor == null ? undefined : { id: cursor },
+      skip: cursor == null ? 0 : 1,
+      take: per_page,
+      select: VersionInfoField0,
+    })
+    .then((vs) =>
+      vs.map((v) => {
+        console.log(v.time);
+        // v.time = v.time.getTime();
+        return v;
+      }),
+    );
 }
 
 /**
@@ -582,14 +612,4 @@ function transSelect<T extends readonly string[]>(data: T) {
   const obj: { [k in typeof data[number]]: true } = {} as any;
   data.forEach((x) => (obj[x as typeof data[number]] = true));
   return obj;
-}
-
-/**
- * 检测项目的名称是否合法
- * @param type 类型
- * @param name 名称
- * @return 是否合法
- */
-function checkProjectTypeName(type: string, name: string): boolean {
-  return !!(type && name && nameLimit.test(type) && nameLimit.test(name));
 }

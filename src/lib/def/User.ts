@@ -1,5 +1,5 @@
 import type { SubBox } from '$lib/db/Prisma';
-import type { user, login_types } from '.prisma/client';
+import type { user, login_types } from '@prisma/client';
 import type { JwtPayload } from 'jsonwebtoken';
 /**
  * 用户基础数据

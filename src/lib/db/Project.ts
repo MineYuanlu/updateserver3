@@ -1,6 +1,6 @@
 import type { Project } from '$def/Project';
 import type { UserInfoPublic } from '$def/User';
-import { compareVersion, toVersionExtra, type Assets } from '$def/Version';
+import { compareVersion, toVersionExtra, type Assets, type VersionExtra } from '$def/Version';
 import { UpdatePushCount } from '$lib/Counter';
 import { stdTTL } from '$lib/def/Config';
 import type { versions } from '@prisma/client';
@@ -25,23 +25,22 @@ export async function getAllTypes() {
 /**
  * 添加新版本并使用
  * @param project 项目数据
- * @param version_id 版本id
  * @param version_tag 版本标签
  * @param prerelease 是否是预览版
+ * @param platform 所属平台
  * @param assets 资源数据
  */
 export async function newVersion(
   project: Project<UserInfoPublic, versions>,
-  version_id: number | string,
   version_tag: string,
   prerelease: boolean,
+  platform: string,
   assets: Assets | null,
 ) {
   UpdatePushCount.add();
 
-  version_id = parseInt(version_id as any);
   prerelease = !!prerelease;
-  const version = await saveVersion(project.id, version_id, version_tag, prerelease);
+  const version = await saveVersion(project.id, version_tag, prerelease, platform);
   if (assets) await saveAssets(version.id, assets);
 
   const oldVersion = prerelease ? project.v_pre : project.v_nor;
@@ -56,14 +55,11 @@ export async function newVersion(
  * @returns `me`版本是否不旧于`other`版本
  */
 function isNotOldThan(
-  project: Project<UserInfoPublic, versions>,
+  project: { v_ext: string | VersionExtra | null },
   me: versions,
   other: versions,
 ): boolean {
-  if (project.cmpWithId && me.version_id && other.version_id)
-    return me.version_id >= other.version_id;
-
   const extraType = toVersionExtra(project.v_ext);
 
-  return compareVersion(other.version!, me.version!, extraType) >= 0;
+  return compareVersion(other.version, me.version, extraType) >= 0;
 }

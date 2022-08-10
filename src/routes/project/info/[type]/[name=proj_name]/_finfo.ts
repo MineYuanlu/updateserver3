@@ -9,7 +9,7 @@ export const finfo: {
     /**显示名称 */
     name: string;
     /** 是否可以编辑 (或编辑类型) */
-    canEdit: boolean | 'bool' | 'pass' | 'version';
+    canEdit: boolean | 'pass' | 'version';
     /** 对于其他用户是否隐藏(其他普通用户, 不包括owner和admin) */
     hideOther?: boolean;
     trans?: (data: proj[key]) => any;
@@ -23,26 +23,15 @@ export const finfo: {
     canEdit: false,
     trans: (u) => (u!.nick ? (u!.name ? `${u!.nick} (${u!.name})` : u!.nick) : u!.name),
   },
-  cmpWithId: { name: '优先比较版本ID', canEdit: 'bool' },
   v_nor: {
     name: '稳定版',
     canEdit: 'version',
-    trans: (v) =>
-      v
-        ? `${v.version || ''}&nbsp;${
-            v.version ? (v.version_id ? `(id: ${v.version_id})` : `id: ${v.version_id}`) : ``
-          }`
-        : '&nbsp;-&nbsp;',
+    trans: (v) => (v ? v.version || '' : '&nbsp;-&nbsp;'),
   },
   v_pre: {
     name: '预览版',
     canEdit: 'version',
-    trans: (v) =>
-      v
-        ? `${v.version || ''}&nbsp;${
-            v.version ? (v.version_id ? `(id: ${v.version_id})` : `id: ${v.version_id}`) : ``
-          }`
-        : '&nbsp;-&nbsp;',
+    trans: (v) => (v ? v.version || '' : '&nbsp;-&nbsp;'),
   },
   v_ext: { name: '额外版本串', canEdit: true },
   v_filename: { name: '文件名格式', canEdit: true },
@@ -68,9 +57,9 @@ export const Finfo = <K extends keys, T extends keyof typeof finfo[K]>(
 export const transData = <T extends keys>(field: T, data: proj[T]): any =>
   Finfo(field, 'trans', (x: proj[T]): any => x)!(data);
 
-export const featureNames: Record<string, string> = {
-  versions: '版本',
-  status: '统计数据',
-  hook: '更新钩子',
-  api: '接口信息',
+export const featureNames: Record<string, { title: string; ownerOnly: boolean }> = {
+  versions: { title: '版本', ownerOnly: false },
+  status: { title: '统计数据', ownerOnly: false },
+  hook: { title: '更新钩子', ownerOnly: true },
+  api: { title: '接口信息', ownerOnly: false },
 };

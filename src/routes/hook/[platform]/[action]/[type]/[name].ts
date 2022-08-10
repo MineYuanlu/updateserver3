@@ -1,5 +1,6 @@
 import { getProjectInternalByName } from '$db/Prisma';
 import { newVersion } from '$db/Project';
+import type { actions, platfroms } from '$def/hook';
 import type { Project } from '$def/Project';
 import type { UserInfoPublic } from '$def/User';
 import type { Assets } from '$def/Version';
@@ -40,13 +41,8 @@ export const POST: RequestHandler = async (event) => {
   if (!platformData.signature(txt, project.token, event))
     return { status: 403, body: 'Bad Signature' };
 
-  return actionData.execute(body, project);
+  return actionData.execute(body, project, platform);
 };
-
-/** 所有支持的平台 */
-const platfroms = ['gitea', 'github'] as const;
-/** 所有支持的操作 */
-const actions = ['release'] as const;
 
 type Platfrom = {
   /** 事件的header标识 */
@@ -73,7 +69,11 @@ type Handler = {
    * @param body 正文内容(解析后)
    * @param project 项目数据
    */
-  execute: (body: any, project: Project<UserInfoPublic, versions>) => ReturnType<RequestHandler>;
+  execute: (
+    body: any,
+    project: Project<UserInfoPublic, versions>,
+    platform: string,
+  ) => ReturnType<RequestHandler>;
 };
 /**
  * 所有的处理器
@@ -88,7 +88,7 @@ const handlers: Record<typeof platfroms[number], Platfrom> = {
     actions: {
       release: {
         event: 'release',
-        async execute({ release }, project) {
+        async execute({ release }, project, platform) {
           if (!release) return { status: 400, body: 'Bad Body' };
 
           const assets: Assets | null = release.assets ? {} : null;
@@ -100,8 +100,8 @@ const handlers: Record<typeof platfroms[number], Platfrom> = {
             );
           }
 
-          const { id, tag_name, prerelease } = release;
-          await newVersion(project, id, tag_name, prerelease, assets);
+          const { tag_name, prerelease } = release;
+          await newVersion(project, tag_name, prerelease, platform, assets);
 
           return { body: 'success' };
         },
@@ -119,7 +119,7 @@ const handlers: Record<typeof platfroms[number], Platfrom> = {
     actions: {
       release: {
         event: 'release',
-        async execute({ release }, project) {
+        async execute({ release }, project, platform) {
           if (!release) return { status: 400, body: 'Bad Body' };
 
           const assets: Assets | null = release.assets ? {} : null;
@@ -131,8 +131,8 @@ const handlers: Record<typeof platfroms[number], Platfrom> = {
             );
           }
 
-          const { id, tag_name, prerelease } = release;
-          await newVersion(project, id, tag_name, prerelease, assets);
+          const { tag_name, prerelease } = release;
+          await newVersion(project, tag_name, prerelease, platform, assets);
 
           return { body: 'success' };
         },

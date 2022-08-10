@@ -1,3 +1,4 @@
+import { getCursor, getPerPage } from '$def/pageable';
 import { getProjectList, getProjectOverviewList } from '$lib/db/Prisma';
 import { getLoginTokenInfo } from '$lib/db/User';
 import { getUserTokenByRequest } from '$lib/def/Login';
@@ -11,10 +12,8 @@ export const GET: RequestHandler = async (event) => {
   const type = event.params['type'];
   const params = event.url.searchParams;
 
-  const index = params.get('index')
-    ? Math.max(parseInt(params.get('index') as string) || 0, 0)
-    : null;
-  const amount = Math.min(Math.max(parseInt(params.get('amount') as string) || 20, 1), 100);
+  const index = getCursor(params.get('index'));
+  const amount = getPerPage(params.get('amount'));
   switch (type) {
     case 'me': {
       const userId = (await getLoginTokenInfo(getUserTokenByRequest(event)))?.u;

@@ -47,8 +47,8 @@ model project {
   v_pre                            Int?           @db.UnsignedInt
   v_extra                          String?        @db.VarChar(2047)
   v_filename                       String?        @db.VarChar(255)
-  user                             user           @relation(fields: [owner], references: [id], onUpdate: Restrict, map: "project_ibfk_2")
   types                            types          @relation(fields: [type], references: [name], onUpdate: Restrict, map: "project_ibfk_1")
+  user                             user           @relation(fields: [owner], references: [id], onUpdate: Restrict, map: "project_ibfk_2")
   versions_project_v_norToversions versions?      @relation("project_v_norToversions", fields: [v_nor], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "project_ibfk_3")
   versions_project_v_preToversions versions?      @relation("project_v_preToversions", fields: [v_pre], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "project_ibfk_4")
   status_chart                     status_chart[]
@@ -109,10 +109,11 @@ model user_third_type {
 model versions {
   id                              Int       @id @default(autoincrement()) @db.UnsignedInt
   owner                           Int       @db.UnsignedInt
-  version_id                      Int?
-  version                         String?   @db.VarChar(255)
+  version                         String    @db.VarChar(255)
   prerelease                      Boolean   @default(false)
   downloadCount                   BigInt    @default(0) @db.UnsignedBigInt
+  time                            DateTime  @db.DateTime(0)
+  platform                        String    @db.VarChar(255)
   project_projectToversions_owner project   @relation("projectToversions_owner", fields: [owner], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "owner")
   assets                          assets[]
   project_project_v_norToversions project[] @relation("project_v_norToversions")

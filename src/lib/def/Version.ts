@@ -1,5 +1,5 @@
 import type { SubBox } from '$lib/db/Prisma';
-import type { versions } from '.prisma/client';
+import type { versions } from '@prisma/client';
 
 /**
  * 资源
@@ -7,7 +7,7 @@ import type { versions } from '.prisma/client';
  * name -> url
  */
 export type Assets = Record<string, string>;
-export const VersionInfoField = ['version', 'version_id', 'prerelease'] as const;
+export const VersionInfoField = ['id', 'version', 'prerelease', 'platform', 'time'] as const;
 /**
  * 一个版本的基础信息
  */

@@ -74,10 +74,7 @@ export const GET: RequestHandler = async (event) => {
       .replace(/\{1\}/g, changeUnit(count))
       .replace(/\{2\}/g, `${count}`);
   } else {
-    status = (status || `{1}`)
-      .replace(/\{1\}/g, `${version.version || version.version_id}`)
-      .replace(/\{2\}/g, `${version.version}`)
-      .replace(/\{3\}/g, `${version.version_id}`);
+    status = (status || `{1}`).replace(/\{1\}/g, `${version.version}`);
   }
   const color = version.prerelease
     ? params.get('c_pre') || 'yellow'
