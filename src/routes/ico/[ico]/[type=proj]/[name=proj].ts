@@ -30,23 +30,15 @@ import type { versions } from '@prisma/client';
  */
 export const GET: RequestHandler = async (event) => {
   const { ico, type, name } = event.params;
+  if (ico.length > 20) return { status: 400 };
   const params = event.url.searchParams;
 
   //获取类型
   const icoType = ico.split('-');
   let isDownload: boolean;
-  switch (icoType[0]) {
-    case 'v':
-    case 'version':
-      isDownload = false;
-      break;
-    case 'd':
-    case 'download':
-      isDownload = true;
-      break;
-    default:
-      return summon(event, 'Unknown Type', ico, 'grey');
-  }
+  if (icoType[0].toLowerCase().indexOf('v') >= 0) isDownload = false;
+  else if (icoType[0].toLowerCase().indexOf('d') >= 0) isDownload = true;
+  else return summon(event, 'Unknown Type', ico.substring(0, 16), 'grey');
 
   //项目
   const subject = (params.get('name') || '{1}:{2}').replace(/\{1\}/g, type).replace(/\{2\}/g, name);

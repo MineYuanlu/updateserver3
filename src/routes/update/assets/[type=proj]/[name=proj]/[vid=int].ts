@@ -7,9 +7,12 @@ import type { RequestHandler } from '@sveltejs/kit';
  * 获取版本资源
  * @returns
  */
-export const GET: RequestHandler = async (event) => {
-  const params = event.params || {};
-  const info = await getProjectInternalByName(params.type, params.name, 'id', 'v_filename');
+export const GET: RequestHandler = async ({ params, url }) => {
+  const { type, name, vid } = params;
+
+  if (isNaN(vid as any)) return { status: 400, body: 'NaN vid: ' + vid };
+
+  const info = await getProjectInternalByName(type, name, 'id', 'v_filename');
   if (!info)
     return {
       status: 404,
@@ -18,9 +21,6 @@ export const GET: RequestHandler = async (event) => {
 
   const reg = matcher2regex(info.v_filename, '/', '/');
   if (!reg) return { status: 423, body: 'project not configured' };
-
-  const vid = params.vid;
-  if (isNaN(vid as any)) return { status: 400, body: 'NaN vid: ' + vid };
 
   const version = await getVersionById(info.id, parseInt(vid), true);
   if (!version) return { status: 404, body: 'Not Found Version' };
@@ -32,11 +32,11 @@ export const GET: RequestHandler = async (event) => {
   for (const name in version.assets) {
     const match = name.match(reg);
     if (!match) continue;
-    const bad = Object.keys(match.groups || {}).findIndex((k) => {
-      const query = event.url.searchParams.get(k);
+    const bad = Object.keys(match.groups || {}).some((k) => {
+      const query = url.searchParams.get(k);
       return query && query.toLowerCase().indexOf(match.groups![k].toLowerCase()) < 0; //指定了匹配但不包含
     });
-    if (bad < 0) results[name] = version.assets[name]; //符合要求
+    if (bad) results[name] = version.assets[name]; //符合要求
   }
   return {
     status: 200,

@@ -7,10 +7,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 /**
  * 获取版本状态
- * @returns
  */
-export const GET: RequestHandler = async (event) => {
-  const params = event.params || {};
+export const GET: RequestHandler = async ({ params, url }) => {
   const project = await getProjectInternalByName(params.type, params.name);
   if (!project)
     return {
@@ -19,7 +17,7 @@ export const GET: RequestHandler = async (event) => {
     };
   UpdateCheckCount.add();
 
-  const tag = event.url.searchParams.get('tag') || null;
+  const tag = url.searchParams.get('tag') || null;
   const extra = toVersionExtra(project.v_ext);
 
   const update: UpdateInfo & { success: true } = { success: true };

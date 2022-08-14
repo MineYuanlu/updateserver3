@@ -27,11 +27,7 @@
     <tbody>
       {#each data as ele0 (ele0.id)}
         {@const ele = t(ele0)}
-        <tr
-          transition:blur
-          class:table-warning={ele.prerelease}
-          class:table-success={!ele.prerelease}
-        >
+        <tr in:blur class:table-warning={ele.prerelease} class:table-success={!ele.prerelease}>
           <td>{ele.version}</td>
           <td>{ele.platform}</td>
           <td>{ele.prerelease ? '预览版' : '稳定版'}</td>

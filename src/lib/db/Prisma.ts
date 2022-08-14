@@ -458,22 +458,14 @@ export async function listVersion(
   cursor = cursor === null ? null : parseInt(cursor as any);
   if (!(owner > 0) || !(per_page > 0)) return null;
   if (cursor !== null && !(cursor >= 0)) return null;
-  return await prisma.versions
-    .findMany({
-      where: { owner },
-      orderBy: { time: 'desc' },
-      cursor: cursor == null ? undefined : { id: cursor },
-      skip: cursor == null ? 0 : 1,
-      take: per_page,
-      select: VersionInfoField0,
-    })
-    .then((vs) =>
-      vs.map((v) => {
-        console.log(v.time);
-        // v.time = v.time.getTime();
-        return v;
-      }),
-    );
+  return await prisma.versions.findMany({
+    where: { owner },
+    orderBy: { time: 'desc' },
+    cursor: cursor == null ? undefined : { id: cursor },
+    skip: cursor == null ? 0 : 1,
+    take: per_page,
+    select: VersionInfoField0,
+  });
 }
 
 /**

@@ -1,4 +1,3 @@
-import type { RequestEvent } from '@sveltejs/kit';
 import cookie from 'cookie';
 
 /**
@@ -6,10 +5,8 @@ import cookie from 'cookie';
  * @param event 请求事件
  * @returns 请求事件中包含的用户token
  */
-export const getUserTokenByRequest = (
-  event: RequestEvent<Record<string, string>>,
-): string | null => {
-  const raw = event.request.headers.get('cookie');
+export const getUserTokenByRequest = ({ request }: { request: Request }): string | null => {
+  const raw = request.headers.get('cookie');
   if (!raw) return null;
   return (cookie.parse(raw) || {})[login_key];
 };

@@ -8,6 +8,9 @@ import type { versions } from '@prisma/client';
 import type { RequestHandler } from '@sveltejs/kit';
 import { createHmac } from 'crypto';
 
+/**
+ * webhook
+ */
 export const POST: RequestHandler = async (event) => {
   const { platform, action, type, name } = event.params;
 
