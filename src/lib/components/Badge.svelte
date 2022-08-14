@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { makeUrl } from './def/Tool';
+  import { makeUrl } from '$def/Tool';
 
   export let ico: string;
   export let type: string;

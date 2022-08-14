@@ -14,13 +14,13 @@
 </script>
 
 <script lang="ts">
-  import Container from '$lib/Container.svelte';
-  import InfoCard from '$lib/InfoCard.svelte';
-  import Panel from '$lib/Panel.svelte';
+  import Container from '$components/Container.svelte';
+  import InfoCard from '$components/InfoCard.svelte';
+  import Panel from '$components/Panel.svelte';
   import { session } from '$app/stores';
   import type { User } from '$lib/def/User';
   import type { ProjectOverview, ProjectOverviewList } from '$lib/def/Project';
-  import Badge from '$lib/Badge.svelte';
+  import Badge from '$components/Badge.svelte';
   import { fade } from 'svelte/transition';
 
   /**基础信息的列表*/

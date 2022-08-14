@@ -13,9 +13,9 @@
 </script>
 
 <script lang="ts">
-  import Container from '$lib/Container.svelte';
-  import InfoCard from '$lib/InfoCard.svelte';
-  import Panel from '$lib/Panel.svelte';
+  import Container from '$components/Container.svelte';
+  import InfoCard from '$components/InfoCard.svelte';
+  import Panel from '$components/Panel.svelte';
   import type { ProjectInfoList } from '$lib/def/Project';
   import { browser } from '$app/env';
   import { getProjectList as getProjectList0 } from '$lib/api/project';

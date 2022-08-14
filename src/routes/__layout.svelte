@@ -1,6 +1,6 @@
 <script lang="ts">
   import 'bootstrap/dist/css/bootstrap.min.css';
-  import SideMenu from '$lib/SideMenu.svelte';
+  import SideMenu from '$components/SideMenu.svelte';
   import '../app.css';
 </script>
 

@@ -3,10 +3,10 @@
 </script>
 
 <script lang="ts">
-  import CardLinkPanel from '$lib/CardLinkPanel.svelte';
-  import Container from '$lib/Container.svelte';
+  import CardLinkPanel from '$components/CardLinkPanel.svelte';
+  import Container from '$components/Container.svelte';
   import { authors, projects, self } from '$lib/def/About';
-  import Panel from '$lib/Panel.svelte';
+  import Panel from '$components/Panel.svelte';
 </script>
 
 <Container id="about">

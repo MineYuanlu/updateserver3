@@ -14,10 +14,10 @@
 </script>
 
 <script lang="ts">
-  import Container from '$lib/Container.svelte';
-  import Panel from '$lib/Panel.svelte';
+  import Container from '$components/Container.svelte';
+  import Panel from '$components/Panel.svelte';
   import { session } from '$app/stores';
-  import InfoCard from '$lib/InfoCard.svelte';
+  import InfoCard from '$components/InfoCard.svelte';
   import { getLoginTypeInfo } from '$lib/api/usr/login';
   import TypeEdit from './_TypeEdit.svelte';
 

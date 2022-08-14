@@ -5,7 +5,7 @@
   import { keys, makeUrl } from '$lib/def/Tool';
   import type { UserInfoPublic } from '$lib/def/User';
   import type { VersionInfo } from '$lib/def/Version';
-  import Select from '$lib/Select.svelte';
+  import Select from '$components/Select.svelte';
   import copy from 'copy-to-clipboard';
   export let project: Project<UserInfoPublic, VersionInfo>;
 

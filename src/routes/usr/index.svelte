@@ -11,10 +11,10 @@
 <script lang="ts">
   import { session } from '$app/stores';
 
-  import Container from '$lib/Container.svelte';
+  import Container from '$components/Container.svelte';
   import type { User } from '$lib/def/User';
-  import InfoCard from '$lib/InfoCard.svelte';
-  import Panel from '$lib/Panel.svelte';
+  import InfoCard from '$components/InfoCard.svelte';
+  import Panel from '$components/Panel.svelte';
   import { keys } from '$lib/def/Tool';
 
   const fieldNames: any = {

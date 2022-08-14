@@ -4,7 +4,7 @@
   import type { Project } from '$def/Project';
   import type { UserInfoPublic } from '$def/User';
   import type { VersionInfo } from '$def/Version';
-  import Select from '$lib/Select.svelte';
+  import Select from '$components/Select.svelte';
   export let project: Project<UserInfoPublic, VersionInfo>;
 
   let platfrom: string;

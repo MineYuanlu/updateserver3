@@ -13,9 +13,9 @@
 </script>
 
 <script lang="ts">
-  import Container from '$lib/Container.svelte';
-  import Panel from '$lib/Panel.svelte';
-  import SvgIcon from '$lib/SvgIcon.svelte';
+  import Container from '$components/Container.svelte';
+  import Panel from '$components/Panel.svelte';
+  import SvgIcon from '$components/SvgIcon.svelte';
   import type { UserInfo, UserInfoPublic } from '$lib/def/User';
   import type { VersionInfo } from '$lib/def/Version';
   import { keys } from '$lib/def/Tool';
