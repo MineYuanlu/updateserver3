@@ -12,7 +12,7 @@
   export /**显示滚动条*/ let scrollable = false;
   export /**垂直居中*/ let centered = false;
 
-  export /**确定按钮*/ let confirm: (() => void) | undefined;
+  export /**确定按钮*/ let confirm: (() => void) | undefined = undefined;
 
   let modal: Modal;
   export /**展示*/ const show = (relatedTarget?: HTMLElement) => modal && modal.show(relatedTarget);
@@ -46,14 +46,16 @@
   bind:this={element}
   class="modal {size ? `modal-${size}` : ''}"
   class:fade={!noFade}
-  class:modal-dialog-scrollable={scrollable}
-  class:modal-dialog-centered={centered}
   data-bs-backdrop:static={staticBackdrop}
   data-bs-keyboard:false={banKeyboard}
   tabindex="-1"
   aria-hidden="true"
 >
-  <div class="modal-dialog">
+  <div
+    class="modal-dialog"
+    class:modal-dialog-scrollable={scrollable}
+    class:modal-dialog-centered={centered}
+  >
     <div class="modal-content">
       <div name="header" class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">{title}</h5>
@@ -62,10 +64,19 @@
       <div class="modal-body"><slot /></div>
       <div class="modal-footer">
         <slot name="footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" on:click={confirm}>
-            确定
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            {confirm ? '取消' : '关闭'}
           </button>
+          {#if confirm}
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              on:click={confirm}
+            >
+              确定
+            </button>
+          {/if}
         </slot>
       </div>
     </div>

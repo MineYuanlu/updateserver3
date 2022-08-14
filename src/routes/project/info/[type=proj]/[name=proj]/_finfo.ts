@@ -9,7 +9,7 @@ export const finfo: {
     /**显示名称 */
     name: string;
     /** 是否可以编辑 (或编辑类型) */
-    canEdit: boolean | 'pass' | 'version';
+    canEdit: boolean | 'pass';
     /** 对于其他用户是否隐藏(其他普通用户, 不包括owner和admin) */
     hideOther?: boolean;
     trans?: (data: proj[key]) => any;
@@ -25,12 +25,12 @@ export const finfo: {
   },
   v_nor: {
     name: '稳定版',
-    canEdit: 'version',
+    canEdit: false,
     trans: (v) => (v ? v.version || '' : '&nbsp;-&nbsp;'),
   },
   v_pre: {
     name: '预览版',
-    canEdit: 'version',
+    canEdit: false,
     trans: (v) => (v ? v.version || '' : '&nbsp;-&nbsp;'),
   },
   v_ext: { name: '额外版本串', canEdit: true },

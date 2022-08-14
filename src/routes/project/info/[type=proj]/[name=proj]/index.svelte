@@ -7,7 +7,7 @@
   export const load: Load = async ({ params, fetch }) => {
     const { type, name } = params;
     const project = await getProjectInfo(fetch, type, name);
-    if (!project) return { status: 404 };
+    if (!project) return { status: 404, error: 'Not Found Project' };
     return { props: { project } };
   };
 </script>
@@ -50,7 +50,7 @@
   let nowFeatureName =
     fByHash($page.url.hash) || (featureNames && Object.keys(featureNames)[0]) || undefined;
   $: nowFeature = name2path(nowFeatureName);
-  $: if (browser) location.hash = nowFeatureName || '';
+  $: if (browser) history.replaceState(null, '', nowFeatureName ? '#' + nowFeatureName : '');
 </script>
 
 <svelte:window on:hashchange={() => (nowFeatureName = fByHash(location.hash) || nowFeatureName)} />
@@ -78,8 +78,6 @@
                   {:else  -->
                   {#if canEdit === 'pass'}
                     <input type="password" />
-                  {:else if canEdit === 'version'}
-                    <a href="/">选择版本</a>
                   {:else if canEdit === true}
                     <input type="text" />
                   {/if}

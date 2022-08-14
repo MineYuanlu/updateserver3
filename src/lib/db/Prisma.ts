@@ -452,7 +452,7 @@ export async function listVersion(
   owner: number | string,
   per_page: number | string,
   cursor: number | string | null,
-): Promise<VersionInfo[] | null> {
+): Promise<model.versions[] | null> {
   owner = parseInt(owner as any);
   per_page = parseInt(per_page as any);
   cursor = cursor === null ? null : parseInt(cursor as any);
@@ -464,7 +464,6 @@ export async function listVersion(
     cursor: cursor == null ? undefined : { id: cursor },
     skip: cursor == null ? 0 : 1,
     take: per_page,
-    select: VersionInfoField0,
   });
 }
 

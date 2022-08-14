@@ -6,6 +6,7 @@ import { stdTTL } from '$lib/def/Config';
 import NodeCache from 'node-cache';
 import { checkProjectTypeName } from '$def/Project';
 import type { project } from '@prisma/client';
+import { b2nObj } from '$def/Tool';
 
 /**
  * 列出一个项目的版本列表
@@ -18,7 +19,7 @@ export const GET: RequestHandler = async (event) => {
   const project = await getProjectInfo(type, name);
   if (!project) return { status: 404, body: 'Project Not Found' };
   const versions = await listVersion(project.id, per_page, cursor);
-  return { body: versions };
+  return { body: versions && versions.map(b2nObj) };
 };
 
 /**

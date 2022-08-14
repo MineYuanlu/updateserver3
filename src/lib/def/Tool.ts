@@ -45,6 +45,23 @@ export function b2n(v: bigint | number | string) {
       throw new Error('Bad type: ' + typeof v);
   }
 }
+
+/**
+ * 将所有bigint的值转为string或number
+ *
+ * @see #b2n
+ */
+export function b2nObj<T>(data: T): {
+  [k in keyof T]: T[k] extends bigint ? string | number : T[k];
+} {
+  const r: any = {};
+  for (const k in data) {
+    const d = data[k];
+    r[k] = typeof d === 'bigint' ? b2n(d) : d;
+  }
+  return r;
+}
+
 /**
  * 简单的将所有number/bigint转为bigint返回
  * @param v 输入数据

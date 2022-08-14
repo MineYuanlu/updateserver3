@@ -7,11 +7,18 @@ import type { versions } from '@prisma/client';
  * name -> url
  */
 export type Assets = Record<string, string>;
-export const VersionInfoField = ['id', 'version', 'prerelease', 'platform', 'time'] as const;
+export const VersionInfoField = ['id', 'version', 'prerelease'] as const;
 /**
  * 一个版本的基础信息
  */
 export type VersionInfo = SubBox<versions, typeof VersionInfoField[number]>;
+
+/**
+ * 版本详细信息(客户端版)
+ */
+export type VersionDetail = {
+  [k in keyof versions]: versions[k] extends bigint ? number | string : versions[k];
+};
 /**
  * 一个版本(可能附带资源文件)
  */

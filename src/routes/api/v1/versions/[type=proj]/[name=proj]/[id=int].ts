@@ -1,5 +1,5 @@
 import { getVersionById } from '$db/Prisma';
-import { b2n } from '$def/Tool';
+import { b2nObj } from '$def/Tool';
 import type { RequestHandler } from '@sveltejs/kit';
 import { getProjectInfo } from './index';
 /**
@@ -12,5 +12,5 @@ export const GET: RequestHandler = async (event) => {
   if (!project) return { status: 404, body: 'Project Not Found' };
   const version = await getVersionById(project.id, id);
   if (!version) return { status: 404, body: 'Version Not Found' };
-  return { body: { ...version, downloadCount: b2n(version.downloadCount) } };
+  return { body: b2nObj(version) };
 };

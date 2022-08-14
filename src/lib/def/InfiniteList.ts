@@ -54,6 +54,9 @@ export class InfiniteListImpl<T> {
       this.end.set(isNaN(block.cursor) || block.end);
       this.cursor.set(block.cursor);
       for (const key in this.updates) await this.updates[key]();
+    } catch (err) {
+      console.log(err);
+      this.end.set(true);
     } finally {
       this.loading.set(false);
     }
